@@ -1,0 +1,28 @@
+#!/bin/sh
+
+buscar_simbolo() {
+	archivo="$1"
+	if [[ ! "$archivo" =~ .*\.so$ ]]; then
+		return
+	fi
+	simbolos="$(strings $archivo | grep "$2" | grep "$3" | grep "$4" | grep "$5" | grep "$6" | grep "$7" | grep "$8" | grep "$9" )"
+	if [[ "$simbolos" != "" ]] ; then
+		echo "$simbolos $archivo"
+	fi
+}
+
+directorio="$1"
+simbolo="$3"
+echo "$simbolo"
+c++filt "$simbolo"
+if [[ "$2" == "1" ]];then
+	palabras_simbolo="$( echo "$simbolo" | sed -E "s/[0-9]+/\n/g" | grep -i "[a-z]" | sed -E "s/([EICFKNPRS_]+[eibcfhjsvx_]+)+$//g"  | sed -E "s/[ECKNPRS]+$//g" | sed -E "s/([EICFKNPRS_]+[eibcfhjsvx_]+)+$//g" | grep -vi "^$" | grep -Evi "^Qt([lr]s)?$" | grep -Ev "^QT[eltq]+$" | grep -vi "^_" | grep -v "^[ENPRS]+$" )"
+else
+	palabras_simbolo="$( echo "$simbolo" )"
+fi
+echo "$palabras_simbolo"
+for archivo in $(ls $directorio/*so*); do
+    if [[ -f "$archivo" ]]; then
+        buscar_simbolo "$archivo" $palabras_simbolo
+    fi
+done
