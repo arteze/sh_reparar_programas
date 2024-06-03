@@ -12,7 +12,7 @@
 # Qt6Designer
 # Qt6Widgets
 
-# tput reset && buscar_simbolo /usr/lib $(/opt/ida-free/ida64 2>&1 | sed "s/[,:]/\n/g" | grep _Z)
+# tput reset && buscar_simbolo /usr/lib 1 $(/opt/ida-free/ida64 2>&1 | sed "s/[,:]/\n/g" | grep _Z)
 
 # x=fs.readFileSync(`/bin/reparar_ida`).toString()
 # x.split(/\n{2}/g).slice(6).sort((a,b)=>a<b?1:a>b?-1:0).map(x=>console.log(x,"\n"))
