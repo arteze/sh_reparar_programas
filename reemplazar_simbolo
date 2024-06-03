@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ "$#" -ne 3 ]; then
+    echo "Uso: $0 <archivo> <string_original> <string_nuevo>"
+    exit 1
+fi
+
+archivo="$1"
+string_original="$2"
+string_nuevo="$3"
+
+if [ ! -f "$archivo" ]; then
+	n="$($archivo 2>&1 | cut -d " " -f "2" | sed "s/://")"
+	if [[ "$n" != "symbol" ]];then
+		chmod +xxxx "$n"
+	fi
+	archivo="$(which "$archivo")"
+	if [ ! -f "$archivo" ]; then
+		echo "El archivo '$archivo' no existe."
+		exit 1
+	fi
+fi
+
+hex_original="$(echo -n "$string_original" | xxd -p | tr "\n" " " | sed "s/ //g")"
+longitud_original_hex=$(echo -n "$hex_original" | wc -c)
+
+hex_nuevo="$(echo -n "$string_nuevo" | xxd -p  | tr "\n" " " | sed "s/ //g")"
+longitud_nuevo_hex=$(echo -n "$hex_nuevo" | wc -c)
+
+if [ $longitud_nuevo_hex -lt $longitud_original_hex ]; then
+    ceros="$(printf '0%.0s' $(seq 1 $((longitud_original_hex - longitud_nuevo_hex))))"
+    hex_nuevo="$hex_nuevo$ceros"
+fi
+
+string="$(cat $archivo | grep -i string_original)"
+if [[ "$string" != "" ]];then
+	echo "$string_original
+	$string_nuevo
+	$hex_original
+	$hex_nuevo
+	"
+fi
+
+hxmod "$hex_original" "$hex_nuevo" "$archivo" "$archivo"
+chmod +xxxx "$archivo"
