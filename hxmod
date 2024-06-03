@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "$#" -ne 4 ]; then
+n="$(basename $0)"
+	echo "Uso:
+$n	hex_entrada  hex_salida   archivo_entrada  archivo_salida
+
+Ejemplo (esto reemplaza el texto 01 por 45):
+$n 3031 3435 a.txt b.txt"
+	exit 1
+fi
+
+if [ ! -f "$3" ]; then
+	echo "El archivo de entrada '$3' no existe."
+	exit 1
+fi
+
+hex_original_sed=$(echo "$1" | sed 's/../\\x&/g')
+hex_nuevo_sed=$(echo "$2" | sed 's/../\\x&/g')
+
+sed "s/$hex_original_sed/$hex_nuevo_sed/g" "$3" > "$4.temp"
+busybox mv -f "$4.temp" "$4"
